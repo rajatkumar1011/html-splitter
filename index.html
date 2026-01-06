@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML ➡️ HTML+CSS+JS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent: #00f2fe;
+            --text-main: #ffffff;
+        }
+
+        body {
+            background-color: #020617;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.1) 0px, transparent 50%);
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .drop-zone {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone.drag-active {
+            border-color: var(--accent);
+            background: rgba(0, 242, 254, 0.05);
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #0ea5e9, #00f2fe);
+            transition: transform 0.2s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
+        }
+
+        /* Syntax Highlighting Mockup */
+        .code-preview {
+            font-family: 'Courier New', monospace;
+            background: #0f172a;
+            border: 1px solid #1e293b;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center p-4">
+
+    <div class="max-w-4xl w-full">
+        <!-- Header -->
+        <header class="mb-12 text-center">
+            <div class="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full bg-slate-800/50 border border-slate-700 text-xs text-cyan-400">
+                <i data-lucide="scissors" class="w-3 h-3"></i>
+                <span>v1.0.0 Static Extractor</span>
+            </div>
+            <h1 class="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+                HTML -> HTML+CSS+JS
+            </h1>
+            <p class="text-slate-400 text-lg">
+                Upload a single HTML file. Get separated HTML, CSS, and JS files instantly.
+            </p>
+        </header>
+
+        <!-- Main Interface -->
+        <div class="glass-panel rounded-2xl p-8 mb-8">
+            
+            <!-- Upload Area -->
+            <div id="drop-area" class="drop-zone rounded-xl p-12 text-center cursor-pointer relative group">
+                <input type="file" id="file-input" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".html,.htm">
+                
+                <div class="transition-transform group-hover:scale-105 duration-300 pointer-events-none">
+                    <div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mx-auto mb-4 text-cyan-400">
+                        <i data-lucide="upload-cloud" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Drop your index.html here</h3>
+                    <p class="text-slate-500 text-sm">or click to browse files</p>
+                </div>
+            </div>
+
+            <!-- Processing Status -->
+            <div id="status-area" class="hidden mt-8">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="h-10 w-10 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400">
+                        <i data-lucide="check-circle" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold">Processing Complete</h4>
+                        <p class="text-sm text-slate-400" id="file-stats">Separated 0 lines of CSS and 0 lines of JS.</p>
+                    </div>
+                </div>
+
+                <!-- Download Actions -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="downloadFile('html')" class="group p-4 rounded-xl bg-slate-800/50 border border-slate-700 hover:border-orange-500/50 transition-colors text-left">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-orange-400 font-mono text-xs">index.html</span>
+                            <i data-lucide="file-code" class="w-4 h-4 text-slate-500 group-hover:text-orange-400"></i>
+                        </div>
+                        <div class="text-sm font-medium">Clean Markup</div>
+                    </button>
+
+                    <button onclick="downloadFile('css')" class="group p-4 rounded-xl bg-slate-800/50 border border-slate-700 hover:border-blue-500/50 transition-colors text-left">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-blue-400 font-mono text-xs">style.css</span>
+                            <i data-lucide="palette" class="w-4 h-4 text-slate-500 group-hover:text-blue-400"></i>
+                        </div>
+                        <div class="text-sm font-medium">Extracted Styles</div>
+                    </button>
+
+                    <button onclick="downloadFile('js')" class="group p-4 rounded-xl bg-slate-800/50 border border-slate-700 hover:border-yellow-500/50 transition-colors text-left">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-yellow-400 font-mono text-xs">script.js</span>
+                            <i data-lucide="braces" class="w-4 h-4 text-slate-500 group-hover:text-yellow-400"></i>
+                        </div>
+                        <div class="text-sm font-medium">Extracted Logic</div>
+                    </button>
+                </div>
+
+                <div class="mt-6 text-center">
+                    <button onclick="downloadAll()" class="btn-primary text-slate-900 font-bold px-8 py-3 rounded-xl inline-flex items-center gap-2">
+                        <i data-lucide="download"></i> Download All
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-slate-400 mb-16">
+            <div class="p-4 rounded-lg bg-slate-900/50 border border-slate-800">
+                <strong class="block text-white mb-1">1. Upload</strong>
+                Drag and drop your single-file HTML project containing inline <code>&lt;style&gt;</code> and <code>&lt;script&gt;</code> tags.
+            </div>
+            <div class="p-4 rounded-lg bg-slate-900/50 border border-slate-800">
+                <strong class="block text-white mb-1">2. Parse</strong>
+                We strip the tags from the HTML, merging multiple blocks into clean CSS and JS files.
+            </div>
+            <div class="p-4 rounded-lg bg-slate-900/50 border border-slate-800">
+                <strong class="block text-white mb-1">3. Link</strong>
+                We automatically inject <code>&lt;link&gt;</code> and <code>&lt;script src&gt;</code> tags into the HTML for you.
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center">
+            <div class="flex justify-center gap-6 mb-4">
+                <a href="https://www.linkedin.com/in/rajatkumar7/" target="_blank" class="text-slate-400 hover:text-blue-400 transition-colors">
+                    <i data-lucide="linkedin" class="w-6 h-6"></i>
+                </a>
+                <a href="https://github.com/rajatkumar1011" target="_blank" class="text-slate-400 hover:text-white transition-colors">
+                    <i data-lucide="github" class="w-6 h-6"></i>
+                </a>
+            </div>
+            <p class="text-slate-500 text-sm mb-2">Made with ❤️ by Rajat Kumar</p>
+            <p class="text-slate-600 text-xs">Copyright © 2026 Rajat Kumar. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Init Icons
+        lucide.createIcons();
+
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('file-input');
+        const statusArea = document.getElementById('status-area');
+        const fileStats = document.getElementById('file-stats');
+
+        // State to hold generated content
+        let generatedFiles = {
+            html: '',
+            css: '',
+            js: ''
+        };
+
+        // Drag & Drop Visuals
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.classList.add('drag-active'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.classList.remove('drag-active'), false);
+        });
+
+        // Handle File Drop or Select
+        dropArea.addEventListener('drop', handleDrop, false);
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files), false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type === 'text/html' || file.name.endsWith('.html')) {
+                    processFile(file);
+                } else {
+                    alert('Please upload a valid HTML file.');
+                }
+            }
+        }
+
+        // Core Processing Logic
+        function processFile(file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const rawHTML = e.target.result;
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(rawHTML, 'text/html');
+
+                let combinedCSS = '/* Extracted Styles */\n\n';
+                let combinedJS = '// Extracted Scripts \n\n';
+
+                // 1. Extract CSS
+                const styleTags = doc.querySelectorAll('style');
+                styleTags.forEach(tag => {
+                    combinedCSS += tag.innerHTML + '\n\n';
+                    tag.remove();
+                });
+
+                // 2. Extract JS (excluding external src scripts)
+                const scriptTags = doc.querySelectorAll('script');
+                scriptTags.forEach(tag => {
+                    if (!tag.hasAttribute('src')) {
+                        combinedJS += tag.innerHTML + '\n\n';
+                        tag.remove();
+                    }
+                });
+
+                // 3. Inject Links into HTML
+                // Add CSS Link to Head
+                const linkTag = doc.createElement('link');
+                linkTag.rel = 'stylesheet';
+                linkTag.href = 'style.css';
+                doc.head.appendChild(linkTag);
+
+                // Add JS Script to Body (end)
+                const scriptTag = doc.createElement('script');
+                scriptTag.src = 'script.js';
+                doc.body.appendChild(scriptTag);
+
+                // Update State
+                generatedFiles.html = doc.documentElement.outerHTML;
+                generatedFiles.css = combinedCSS;
+                generatedFiles.js = combinedJS;
+
+                // Update UI
+                const cssLines = combinedCSS.split('\n').length;
+                const jsLines = combinedJS.split('\n').length;
+                fileStats.textContent = `Extracted ${styleTags.length} style blocks and ${scriptTags.length} script blocks.`;
+                
+                statusArea.classList.remove('hidden');
+                
+                // Reset icon
+                lucide.createIcons();
+            };
+
+            reader.readAsText(file);
+        }
+
+        // Download Helpers
+        function downloadFile(type) {
+            let content, filename;
+            
+            if (type === 'html') {
+                content = generatedFiles.html;
+                filename = 'index.html';
+            } else if (type === 'css') {
+                content = generatedFiles.css;
+                filename = 'style.css';
+            } else if (type === 'js') {
+                content = generatedFiles.js;
+                filename = 'script.js';
+            }
+
+            const element = document.createElement('a');
+            const blob = new Blob([content], { type: type === 'html' ? 'text/html' : 'text/plain' });
+            element.href = URL.createObjectURL(blob);
+            element.download = filename;
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        function downloadAll() {
+            downloadFile('css');
+            setTimeout(() => downloadFile('js'), 200);
+            setTimeout(() => downloadFile('html'), 400);
+        }
+    </script>
+</body>
+</html>
